@@ -1,0 +1,42 @@
+version: "2.26.1"
+services:
+  microservicios:
+    container_name: microservicios
+    image: microservicios:v1
+    build:
+      context: ./microservicios
+      dockerfile: Dockerfile
+    ports: 
+      - "5173"
+    networks:
+      - proyectos-app
+
+  mayordemanda:
+    container_name: mayordemanda
+    image: mayordemanda:v1
+    build:
+      context: ./mayordemanda
+      dockerfile: Dockerfile
+    depends_on:
+      - microservicios
+    environment:
+      API_URL: http://microservicios:5173
+    ports:
+      - "5172"
+    networks:
+      - proyectos-app
+
+  balanceador:
+    container_name: balanceador
+    image: balanceador:v1
+    build:
+      context: ./balanceador
+      dockerfile: Dockerfile
+    ports:
+      - "4003:80"
+    networks:
+      - proyectos-app
+
+
+networks:
+  proyectos-app:
